@@ -19,14 +19,14 @@ def test_draft_parsing(good_path):
     assert x.is_draft
     assert x.name == "foo.docx"
     assert x.date == "2019-01-05"
-    assert x.version == None
+    assert x.version == 0
     assert x.exists
 
 def test_draft_parsing_version():
     x = File("drafts/2019-01-05_foo-v2.docx")
     assert x.name == "foo.docx"
     assert x.date == "2019-01-05"
-    assert x.version == "2"
+    assert x.version == 2
     assert not x.exists
 
 def test_not_draft():

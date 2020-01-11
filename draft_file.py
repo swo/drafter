@@ -30,10 +30,10 @@ class File:
 
         if version_match is None:
             name = date_name_match.group("name_and_version")
-            version = None
+            version = 0
         else:
             name = version_match.group("prefix") + "." + version_match.group("extension")
-            version = version_match.group("version")
+            version = int(version_match.group("version"))
 
         return {"name": name, "date": date, "version": version}
 
