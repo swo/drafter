@@ -8,4 +8,5 @@ setup(name="drafter",
       author_email="swo@alum.mit.edu",
       license="MIT",
       packages=["drafter"],
+      scripts=["bin/drafter"],
       zip_safe=False)

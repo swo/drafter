@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
-from draft_file import File
-from draft_group import DraftGroup, find_groups
+from drafter.draft_file import File
+from drafter.draft_group import DraftGroup, find_groups
 
 import argparse, os.path, shutil
 

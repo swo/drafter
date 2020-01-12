@@ -1,4 +1,4 @@
-from draft_file import File
+from .draft_file import File
 import argparse, os, os.path, shutil, sys, re
 from datetime import date
 
