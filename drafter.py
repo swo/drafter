@@ -1,62 +1,66 @@
 #!/usr/bin/env python3
 
-import draft_file, draft_group
+from draft_file import File
+from draft_group import DraftGroup, find_groups
 
-import argparse, os, os.path, shutil, sys, re, hashlib
-from datetime import date
+import argparse, os.path, shutil
+
+def infer_and_copy(source_dir, drafts_dir):
+    groups = find_groups(source_dir, drafts_dir)
+    nonempty_groups = [x for x in groups if len(x.drafts) > 0]
+    up_to_date_groups = [x for x in nonempty_groups if x.drafts_up_to_date()]
+    groups_to_update = [x for x in nonempty_groups if not x.drafts_up_to_date()]
+
+    if len(nonempty_groups) == 0:
+        sources = [x.source.basename for x in groups]
+        raise RuntimeError(f"No draft files found for potential sources: {sources}")
+    else:
+        if len(up_to_date_groups) > 0:
+            print("Up to date drafts:")
+            for group in up_to_date_groups:
+                draft_path = os.path.join(drafts_dir, group.latest_draft.path)
+                print(f"  {group.source.path} == {draft_path}")
+
+        if len(groups_to_update) == 0:
+            print("All source files up to date")
+        else:
+            print("Drafts to update:")
+            copies = [x.update_src_dest(drafts_dir) for x in groups_to_update]
+
+            for src, dest in copies:
+                print(f"  {src} -> {dest}")
+
+                if os.path.exists(dest):
+                    raise RuntimeError(f"Draft target {dest} exists")
+
+            for src, dest in copies:
+                shutil.copy(src, dest)
+
+def copy_new_sources(sources, drafts_dir):
+    groups = [DraftGroup(File(x), []) for x in sources]
+    copies = [x.update_src_dest(drafts_dir) for x in groups]
+
+    print("Drafts to initiate:")
+    for src, dest in copies:
+        print(f"  {src} -> {dest}")
+
+        if os.path.exists(dest):
+            raise RuntimeError(f"Draft target {dest} exists")
+
+    for src, dest in copies:
+        shutil.copy(src, dest)
 
 
 if __name__ == "__main__":
     p = argparse.ArgumentParser("Copy dates files to a drafts/ folder")
-    # p.add_argument("files", nargs="*", help="File(s) to copy")
-    # p.add_argument("-f", "--force", action="store_true", help="Overwrite same-date files?")
+    p.add_argument("files", nargs="*", help="New source files to set up")
     p.add_argument("-s", "--source_dir", default=".", help="Source file directory")
     p.add_argument("-d", "--drafts_dir", default="drafts", help="Destination directory")
     p.add_argument("-q", "--quiet", action="store_true", help="Don't show source and destination?")
 
     args = p.parse_args()
 
-    # get the draft groups
-    groups = draft_group.find_groups(args.source_dir, args.drafts_dir)
-
-    print(groups)
-    print([group.source.name for group in groups if group.new_draft_is_required])
-    assert False
-    
-
-    # Infer files to read
     if len(args.files) == 0:
-        files = infer_files_to_copy(os.getcwd(), args.directory)
-
-        if len(files) == 0:
-            raise RuntimeError("No candidate draft files found; specify manually")
-        else:
-            print("Candidate draft files found:")
-            for x in files:
-                print(" ", x)
-
-            yn = input("Copy? [y/N] ").strip().lower()
-
-            if yn == "y":
-                args.files = files
-            else:
-                raise RuntimeError("Not copying")
-
-    prefix = date.today().isoformat() + "_"
-    dests = [os.path.join(args.directory, prefix + x) for x in args.files]
-
-    if not args.quiet:
-        for src, dest in zip(args.files, dests):
-            print(f"{src} -> {dest}")
-
-    conflicts = [x for x in dests if os.path.exists(x)]
-
-    if len(conflicts) > 0 and not args.force:
-        message = "Destination files already exist:\n" + "\n".join(["  " + x for x in conflicts])
-        yn = input("Overwrite files? [y/N] ")
-
-        if yn.strip().lower() != "y":
-            raise RuntimeError("Destination files already exist")
-
-    for src, dest in zip(args.files, dests):
-        shutil.copy(src, dest)
+        infer_and_copy(args.source_dir, args.drafts_dir)
+    else:
+        copy_new_sources(args.files, args.drafts_dir)

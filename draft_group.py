@@ -10,10 +10,9 @@ class DraftGroup:
         self.source = source
         self.drafts = drafts
 
-        if self.drafts == []:
+        if len(self.drafts) == 0:
             self.latest_draft = None
             self.next_draft_basename = f"{date.today().isoformat()}_{self.source.basename}"
-            self.new_draft_is_required = True
         else:
             self.latest_draft = sorted(self.drafts, key=lambda x: (x.date, x.version))[-1]
             self.next_draft_basename = self.latest_draft.next_draft_basename()
@@ -22,8 +21,14 @@ class DraftGroup:
         drafts_repr = ", ".join([repr(x) for x in self.drafts])
         return f"DraftGroup({repr(self.source)}, [{drafts_repr}])"
 
-    def new_draft_is_required(self):
-        return not self.source.identical_contents_to(self.latest_draft)
+    def drafts_up_to_date(self):
+        if len(self.drafts) == 0:
+            raise RuntimeError(f"Draft group {repr(self)} has no drafts")
+        else:
+            return self.source.identical_contents_to(self.latest_draft)
+
+    def update_src_dest(self, drafts_dir):
+        return (self.source.path, os.path.join(drafts_dir, self.next_draft_basename))
 
 def group_files(sources, drafts):
     """Figure out which draft files go with which source files"""
@@ -39,5 +44,5 @@ def find_groups(source_dir, drafts_dir):
 
     # get the source and draft files
     sources = [File(x.name) for x in os.scandir(source_dir) if x.is_file()]
-    drafts = [File(x.name) for x in os.scandir(drafts_dir) if x.is_file()]
+    drafts = [File(os.path.join(drafts_dir, x.name)) for x in os.scandir(drafts_dir) if x.is_file()]
     return group_files(sources, drafts)
