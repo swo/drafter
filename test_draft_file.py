@@ -1,23 +1,24 @@
 from draft_file import *
 import pytest, tempfile, os, os.path
 
-good_name = "2019-01-05_foo.docx"
-
 @pytest.fixture
-def good_path():
+def tempdir():
     with tempfile.TemporaryDirectory() as tempdir:
-        path = os.path.join(tempdir, good_name)
+        yield tempdir
 
-        with open(path, "w") as f:
-            f.write("test\n")
+def write_file(tempdir, name, contents):
+    path = os.path.join(tempdir, name)
+    with open(path, "w") as f:
+        f.write(contents)
 
-        yield path
+    return path
 
+def test_draft_parsing(tempdir):
+    path = write_file(tempdir, "2019-01-05_file.txt", "contents")
 
-def test_draft_parsing(good_path):
-    x = File(good_path)
+    x = File(path)
     assert x.is_draft
-    assert x.name == "foo.docx"
+    assert x.name == "file.txt"
     assert x.date == "2019-01-05"
     assert x.version == 1
     assert x.exists
@@ -32,13 +33,17 @@ def test_draft_parsing_version():
 def test_not_draft():
     assert not File("drafts/foo.docx").is_draft
 
-def test_hash():
-    msg = "foo"
-    with tempfile.NamedTemporaryFile("w") as f1, tempfile.NamedTemporaryFile("w") as f2:
-        f1.write(msg)
-        f2.write(msg)
+def test_hash(tempdir):
+    path1 = write_file(tempdir, "source.txt", "same file contents")
+    path2 = write_file(tempdir, "draft.txt", "same file contents")
 
-        assert File.digest_file(f1.name) == File.digest_file(f2.name)
+    assert File.digest_file(path1) == File.digest_file(path2)
+
+def test_hash_no(tempdir):
+    path1 = write_file(tempdir, "source.txt", "same file contents")
+    path2 = write_file(tempdir, "draft.txt", "different file contents")
+
+    assert File.digest_file(path1) != File.digest_file(path2)
 
 def test_match():
     assert File("2019-01-01_foo.docx").is_draft_of(File("foo.docx"))
