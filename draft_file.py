@@ -3,42 +3,33 @@ from datetime import date
 
 
 class File:
-    date_name_regex = re.compile("(?P<date>\\d{4}-\\d{2}-\\d{2})_(?P<name_and_version>.+)")
+    regex = re.compile("(?P<date>\\d{4}-\\d{2}-\\d{2})_(?P<prefix>[^.]+?)(-v(?P<version>\\d+))?\\.(?P<extension>.+)")
 
     def __init__(self, path):
         self.path = path
         self.basename = os.path.basename(self.path)
 
-        self.is_draft = self.date_name_regex.fullmatch(self.basename) is not None
+        m = self.regex.fullmatch(self.basename)
+
+        self.is_draft = m is not None
 
         if self.is_draft:
-            path_parts = self.parse_path(self.basename)
-            self.name = path_parts["name"]
-            self.date = path_parts["date"]
-            self.version = path_parts["version"]
+            self.date = m.group("date")
+
+            self.prefix = m.group("prefix")
+            self.extension = m.group("extension")
+            self.name = self.prefix + "." + self.extension
+
+            if m.group("version") is None:
+                self.version = 1
+            else:
+                self.version = int(m.group("version"))
         else:
             self.name = self.basename
 
         self.exists = os.path.isfile(self.path)
         if self.exists:
             self.hash = self.digest_file(self.path)
-
-    @classmethod
-    def parse_path(cls, path):
-        date_name_match = cls.date_name_regex.fullmatch(path)
-        version_match = re.fullmatch("(?P<prefix>.*)-v(?P<version>\\d+)\\.(?P<extension>.+)", date_name_match.group("name_and_version"))
-
-        date = date_name_match.group("date")
-
-        if version_match is None:
-            name = date_name_match.group("name_and_version")
-            version = 1
-        else:
-            name = version_match.group("prefix") + "." + version_match.group("extension")
-            version = int(version_match.group("version"))
-
-        return {"name": name, "date": date, "version": version}
-
 
     @staticmethod
     def digest_file(path):
@@ -57,10 +48,12 @@ class File:
     def is_draft_of(self, other):
         return self.is_draft and not other.is_draft and self.name == other.name
 
-    def next_draft_path(self):
-        pass
-        # today = date.today().isoformat()
+    def next_draft_basename(self):
+        today = date.today().isoformat()
 
-        # if self.date == today:
-        #     # increment version
-        #     return f"{today}_
+        if self.date == today:
+            # increment version
+            return f"{today}_{self.prefix}-v{self.version + 1}.{self.extension}"
+        else:
+            # increment date only
+            return f"{today}_{self.prefix}.{self.extension}"
