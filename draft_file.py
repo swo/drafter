@@ -10,7 +10,6 @@ class File:
         self.basename = os.path.basename(self.path)
 
         m = self.regex.fullmatch(self.basename)
-
         self.is_draft = m is not None
 
         if self.is_draft:
@@ -27,9 +26,8 @@ class File:
         else:
             self.name = self.basename
 
-        self.exists = os.path.isfile(self.path)
-        if self.exists:
-            self.hash = self.digest_file(self.path)
+    def identical_contents_to(self, other):
+        return self.digest_file(self.path) == self.digest_file(other.path)
 
     @staticmethod
     def digest_file(path):

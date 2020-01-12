@@ -14,21 +14,17 @@ def write_file(tempdir, name, contents):
     return path
 
 def test_draft_parsing(tempdir):
-    path = write_file(tempdir, "2019-01-05_file.txt", "contents")
-
-    x = File(path)
-    assert x.is_draft
-    assert x.name == "file.txt"
-    assert x.date == "2019-01-05"
-    assert x.version == 1
-    assert x.exists
+    f = File("2019-01-05_file.txt")
+    assert f.is_draft
+    assert f.name == "file.txt"
+    assert f.date == "2019-01-05"
+    assert f.version == 1
 
 def test_draft_parsing_version():
-    x = File("drafts/2019-01-05_foo-v2.docx")
-    assert x.name == "foo.docx"
-    assert x.date == "2019-01-05"
-    assert x.version == 2
-    assert not x.exists
+    f = File("drafts/2019-01-05_foo-v2.docx")
+    assert f.name == "foo.docx"
+    assert f.date == "2019-01-05"
+    assert f.version == 2
 
 def test_not_draft():
     assert not File("drafts/foo.docx").is_draft
@@ -36,14 +32,18 @@ def test_not_draft():
 def test_hash(tempdir):
     path1 = write_file(tempdir, "source.txt", "same file contents")
     path2 = write_file(tempdir, "draft.txt", "same file contents")
+    file1 = File(path1)
+    file2 = File(path2)
 
-    assert File.digest_file(path1) == File.digest_file(path2)
+    assert file1.identical_contents_to(file2)
 
 def test_hash_no(tempdir):
     path1 = write_file(tempdir, "source.txt", "same file contents")
     path2 = write_file(tempdir, "draft.txt", "different file contents")
+    file1 = File(path1)
+    file2 = File(path2)
 
-    assert File.digest_file(path1) != File.digest_file(path2)
+    assert not file1.identical_contents_to(file2)
 
 def test_match():
     assert File("2019-01-01_foo.docx").is_draft_of(File("foo.docx"))
