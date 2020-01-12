@@ -32,7 +32,7 @@ class File:
 
         if version_match is None:
             name = date_name_match.group("name_and_version")
-            version = 0
+            version = 1
         else:
             name = version_match.group("prefix") + "." + version_match.group("extension")
             version = int(version_match.group("version"))
