@@ -35,3 +35,13 @@ def test_new_draft_no(tempdir):
     group = DraftGroup(File(source_path), [File(draft_path)])
 
     assert not group.new_draft_is_required
+
+def test_grouping(tempdir):
+    source_paths = [write_file(tempdir, x, "contents") for x in ["sourceA.txt", "sourceB.txt", "sourceC.txt"]]
+    draft_paths = [write_file(tempdir, x, "contents") for x in ["2020-01-01_sourceA.txt", "1987-05-06_sourceB-v2.txt"]]
+    sources = [File(x) for x in source_paths]
+    drafts = [File(x) for x in draft_paths]
+
+    groups = group_files(sources, drafts)
+    group_dict = {group.source.basename: [x.basename for x in group.drafts] for group in groups}
+    assert group_dict == {"sourceA.txt": ["2020-01-01_sourceA.txt"], "sourceB.txt": ["1987-05-06_sourceB-v2.txt"], "sourceC.txt": []}

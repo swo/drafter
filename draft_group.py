@@ -20,4 +20,4 @@ class DraftGroup:
 
 def group_files(sources, drafts):
     """Figure out which draft files go with which source files"""
-    pass
+    return [DraftGroup(source, [draft for draft in drafts if draft.is_draft_of(source)]) for source in sources]

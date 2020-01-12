@@ -45,13 +45,13 @@ class File:
 
         return h.hexdigest()
 
-    def is_draft_of(self, other):
-        return self.is_draft and not other.is_draft and self.name == other.name
+    def is_draft_of(self, source):
+        return self.is_draft and not source.is_draft and self.name == source.name
 
     def next_draft_basename(self):
         today = date.today().isoformat()
 
-        if self.is_draft and self.date == today:
+        if self.date == today:
             # increment version
             return f"{today}_{self.prefix}-v{self.version + 1}.{self.extension}"
         else:
