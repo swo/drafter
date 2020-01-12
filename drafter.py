@@ -1,32 +1,28 @@
 #!/usr/bin/env python3
 
-import draft_file
+import draft_file, draft_group
 
 import argparse, os, os.path, shutil, sys, re, hashlib
 from datetime import date
 
 
-def infer_files_to_copy(source_directory, draft_directory):
-    """Look for filenames in common between source and draft directories"""
-    source_names = set([x.name for x in os.scandir(source_directory)])
-
-    drafts = [Draft(x.path) for x in os.scandir(draft_directory)]
-    draft_names = set([x.name for x in drafts if x.is_draft])
-
-    return source_names.intersection(draft_names)
-
-
 if __name__ == "__main__":
     p = argparse.ArgumentParser("Copy dates files to a drafts/ folder")
-    p.add_argument("files", nargs="*", help="File(s) to copy")
-    p.add_argument("-f", "--force", action="store_true", help="Overwrite same-date files?")
-    p.add_argument("-d", "--directory", default="drafts", help="Destination directory")
+    # p.add_argument("files", nargs="*", help="File(s) to copy")
+    # p.add_argument("-f", "--force", action="store_true", help="Overwrite same-date files?")
+    p.add_argument("-s", "--source_dir", default=".", help="Source file directory")
+    p.add_argument("-d", "--drafts_dir", default="drafts", help="Destination directory")
     p.add_argument("-q", "--quiet", action="store_true", help="Don't show source and destination?")
 
     args = p.parse_args()
 
-    if not os.path.isdir(args.directory):
-        raise RuntimeError(f"Destination folder '{args.directory}' does not exist")
+    # get the draft groups
+    groups = draft_group.find_groups(args.source_dir, args.drafts_dir)
+
+    print(groups)
+    print([group.source.name for group in groups if group.new_draft_is_required])
+    assert False
+    
 
     # Infer files to read
     if len(args.files) == 0:

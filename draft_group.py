@@ -1,3 +1,4 @@
+from draft_file import File
 import argparse, os, os.path, shutil, sys, re
 from datetime import date
 
@@ -21,3 +22,16 @@ class DraftGroup:
 def group_files(sources, drafts):
     """Figure out which draft files go with which source files"""
     return [DraftGroup(source, [draft for draft in drafts if draft.is_draft_of(source)]) for source in sources]
+
+def find_groups(source_dir, drafts_dir):
+    # check that the directories exist
+    if not os.path.isdir(source_dir):
+        raise RuntimeError(f"Source folder '{source_dir}' does not exist")
+
+    if not os.path.isdir(drafts_dir):
+        raise RuntimeError(f"Destination folder '{drafts_dir}' does not exist")
+
+    # get the source and draft files
+    sources = [File(x.name) for x in os.scandir(source_dir) if x.is_file()]
+    drafts = [File(x.name) for x in os.scandir(drafts_dir) if x.is_file()]
+    return group_files(sources, drafts)
