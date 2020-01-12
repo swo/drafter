@@ -26,6 +26,9 @@ class File:
         else:
             self.name = self.basename
 
+    def __repr__(self):
+        return f"File({repr(self.path)})"
+
     def identical_contents_to(self, other):
         return self.digest_file(self.path) == self.digest_file(other.path)
 

@@ -4,6 +4,14 @@ from test_draft_file import tempdir, write_file
 import pytest, tempfile, os.path
 from datetime import date
 
+def test_repr():
+    source = File("source.txt")
+    draft_names = ["2009-01-01_source.txt", "2000-01-01_source.txt"]
+    drafts = [File(x) for x in draft_names]
+    group = DraftGroup(source, drafts)
+
+    assert repr(group) == "DraftGroup(File('source.txt'), [File('2009-01-01_source.txt'), File('2000-01-01_source.txt')])"
+
 def test_next_version_date():
     source = File("source.txt")
     draft_names = ["2009-01-01_source.txt", "2000-01-01_source.txt", "2000-01-01_source-v2.txt"]

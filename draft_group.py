@@ -18,6 +18,10 @@ class DraftGroup:
             self.latest_draft = sorted(self.drafts, key=lambda x: (x.date, x.version))[-1]
             self.next_draft_basename = self.latest_draft.next_draft_basename()
 
+    def __repr__(self):
+        drafts_repr = ", ".join([repr(x) for x in self.drafts])
+        return f"DraftGroup({repr(self.source)}, [{drafts_repr}])"
+
     def new_draft_is_required(self):
         return not self.source.identical_contents_to(self.latest_draft)
 

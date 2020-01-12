@@ -13,7 +13,11 @@ def write_file(tempdir, name, contents):
 
     return path
 
-def test_draft_parsing(tempdir):
+def test_repr():
+    f = File("2019-01-05_file.txt")
+    assert repr(f) == "File('2019-01-05_file.txt')"
+
+def test_draft_parsing():
     f = File("2019-01-05_file.txt")
     assert f.is_draft
     assert f.name == "file.txt"
