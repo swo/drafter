@@ -39,3 +39,9 @@ def test_hash():
         f2.write(msg)
 
         assert File.digest_file(f1.name) == File.digest_file(f2.name)
+
+def test_match():
+    assert File("2019-01-01_foo.docx").is_draft_of(File("foo.docx"))
+
+def test_match_bad():
+    assert not File("2019-01-01_foo.docx").is_draft_of(File("bar.docx"))

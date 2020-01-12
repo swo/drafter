@@ -16,6 +16,8 @@ class File:
             self.name = path_parts["name"]
             self.date = path_parts["date"]
             self.version = path_parts["version"]
+        else:
+            self.name = self.basename
 
         self.exists = os.path.isfile(self.path)
         if self.exists:
@@ -51,3 +53,6 @@ class File:
                 h.update(chunk)
 
         return h.hexdigest()
+
+    def is_draft_of(self, other):
+        return self.is_draft and not other.is_draft and self.name == other.name
