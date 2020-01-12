@@ -56,3 +56,11 @@ class File:
 
     def is_draft_of(self, other):
         return self.is_draft and not other.is_draft and self.name == other.name
+
+    def next_draft_path(self):
+        pass
+        # today = date.today().isoformat()
+
+        # if self.date == today:
+        #     # increment version
+        #     return f"{today}_
