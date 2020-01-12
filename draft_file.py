@@ -51,7 +51,7 @@ class File:
     def next_draft_basename(self):
         today = date.today().isoformat()
 
-        if self.date == today:
+        if self.is_draft and self.date == today:
             # increment version
             return f"{today}_{self.prefix}-v{self.version + 1}.{self.extension}"
         else:

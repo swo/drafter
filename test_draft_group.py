@@ -22,6 +22,13 @@ def test_next_version_number(tempdir):
     group = DraftGroup(File(source_path), [File(draft_path)])
     assert group.next_draft_basename == new_path
 
+def test_next_version_no_drafts(tempdir):
+    source_path = write_file(tempdir, "source.txt", "source file contents")
+    source = File(source_path)
+
+    group = DraftGroup(source, [])
+    assert group.next_draft_basename == date.today().isoformat() + "_source.txt"
+
 def test_new_draft_no(tempdir):
     source_path = write_file(tempdir, "source.txt", "identical contents")
     draft_path = write_file(tempdir, "1918-04-14_source-v5.txt", "identical contents")
