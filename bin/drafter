@@ -52,11 +52,13 @@ def copy_new_sources(sources, drafts_dir):
 
 
 if __name__ == "__main__":
-    p = argparse.ArgumentParser("Copy dates files to a drafts/ folder")
+    p = argparse.ArgumentParser(
+        description="Copy dates files to a drafts/ folder",
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter
+    )
     p.add_argument("files", nargs="*", help="New source files to set up")
     p.add_argument("-s", "--source_dir", default=".", help="Source file directory")
     p.add_argument("-d", "--drafts_dir", default="drafts", help="Destination directory")
-    p.add_argument("-q", "--quiet", action="store_true", help="Don't show source and destination?")
 
     args = p.parse_args()
 

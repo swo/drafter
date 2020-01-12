@@ -12,8 +12,8 @@ For example, say you are preparing a paper. You have a manuscript file and a cov
 ```
 project_dir
 ├── drafts
-├── project-cover-letter.docx
-└── project-manuscript.docx
+├── cover-letter.docx
+└── manuscript.docx
 ```
 
 The manuscript and cover letter are version controlled, but when you want to
@@ -21,9 +21,9 @@ send a version to a colleague, you want some kind of human-readable version
 control. To initiate a draft:
 
 ```
-> drafter project-manuscript.py
+> drafter manuscript.docx
 Drafts to initiate:
-  project-manuscript.docx -> drafts/2020-01-12_project-manuscript.docx
+  manuscript.docx -> drafts/2020-01-12_manuscript.docx
 ```
 
 And then you have file structure:
@@ -31,19 +31,19 @@ And then you have file structure:
 ```
 project_dir
 ├── drafts
-│   └── 2020-01-12_project-manuscript.docx
-├── project-cover-letter.docx
-└── project-manuscript.docx
+│   └── 2020-01-12_manuscript.docx
+├── cover-letter.docx
+└── manuscript.docx
 ```
 
-If you change the manuscript file and call `drafter` again (with no
-arguments), you'll get a new draft, either with a new date, or with the same
-date and a version number:
+If you change the manuscript file and call `drafter` again (with no arguments),
+you'll get a new draft, either with a new date (I wrote this on 12 Jan 2020),
+or with the same date and a version number:
 
 ```
 > drafter
 Drafts to update:
-  project-manuscript.docx -> drafts/2020-01-12_project-manuscript-v2.docx
+  manuscript.docx -> drafts/2020-01-12_manuscript-v2.docx
 ```
 
 `drafter` checks if the source and the latest draft are different, so if you
@@ -53,12 +53,12 @@ version:
 ```
 > drafter
 Up to date drafts:
-  project-manuscript.docx == drafts/drafts/2020-01-12_project-manuscript-v2.docx
+  manuscript.docx == drafts/2020-01-12_manuscript-v2.docx
 All source files up to date
 ```
 
 If you want to put the cover letter under "drafts control", then you specify it
-on the command line: `drafter project-cover-letter.docx`.
+on the command line: `drafter cover-letter.docx`.
 
 ## To do
 
