@@ -2,7 +2,7 @@
 
 This is a tool designed to help with a particular workflow:
 
-- In a work directory (e.g., a git repo), you has some active (likely version-controlled) "source" files.
+- In a work directory (e.g., a git repo), you have some active (likely version-controlled) "source" files.
 - You have a `drafts/` subdirectory, where you copy the source files with a date, to make them distinguishable for colleagues.
 
 `drafter` will help in copying files to the drafts folder.
